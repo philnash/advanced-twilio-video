@@ -1,4 +1,4 @@
-import {
+const {
   createLocalAudioTrack,
   createLocalTracks,
   createLocalVideoTrack,
@@ -8,8 +8,7 @@ import {
   RemoteTrack,
   RemoteTrackPublication,
   RemoteParticipant,
-  VideoProcessor,
-} from "twilio-video";
+} = Twilio.Video;
 import { buildDropDown, attachTrack, detachTrack, loadImage } from "./utils";
 
 const loadingDiv = /** @type {HTMLDivElement} */ (
@@ -63,6 +62,9 @@ const disconnectBtn = /** @type {HTMLButtonElement} */ (
 );
 const videoEffects = /** @type {HTMLDivElement} */ (
   document.getElementById("video-effects")
+);
+const noiseCancellationButton = /** @type {HTMLButtonElement} */ (
+  document.getElementById("noise-cancellation")
 );
 
 /**
@@ -164,6 +166,10 @@ window.addEventListener("load", async () => {
       },
       audio: {
         name: "user-audio",
+        noiseCancellationOptions: {
+          sdkAssetsPath: "/krisp",
+          vendor: "krisp",
+        },
       },
     });
 
@@ -173,6 +179,10 @@ window.addEventListener("load", async () => {
     let audioTrack = /** @type {LocalAudioTrack} */ (
       tracks.find((track) => track.kind === "audio")
     );
+    if (!audioTrack.noiseCancellation.isEnabled) {
+      noiseCancellationButton.setAttribute("hidden", "hidden");
+    }
+    window.audioTrack = audioTrack;
     let videoPreview = attachTrack(videoPreviewDiv, videoTrack);
     loginDiv.setAttribute("hidden", "hidden");
     localPreview.removeAttribute("hidden");
@@ -274,6 +284,9 @@ window.addEventListener("load", async () => {
           tracks: [videoTrack, audioTrack],
           name: roomName,
         });
+        if (!audioTrack.noiseCancellation.isEnabled) {
+          noiseCancellationButton.setAttribute("hidden", "hidden");
+        }
         room.participants.forEach(addParticipant(remoteParticipantDiv));
         room.on("participantConnected", addParticipant(remoteParticipantDiv));
         room.on("participantDisconnected", () => {
@@ -298,11 +311,27 @@ window.addEventListener("load", async () => {
           }
         }
         muteBtn.addEventListener("click", toggleMute);
+
         function disconnectRoom() {
           room.disconnect();
         }
         disconnectBtn.addEventListener("click", disconnectRoom);
 
+        function toggleNoiseCancellation() {
+          if (
+            noiseCancellationButton.textContent === "Disable noise cancellation"
+          ) {
+            audioTrack.noiseCancellation.disable();
+            noiseCancellationButton.textContent = "Enable noise cancellation";
+          } else {
+            audioTrack.noiseCancellation.enable();
+            noiseCancellationButton.textContent = "Disable noise cancellation";
+          }
+        }
+        noiseCancellationButton.addEventListener(
+          "click",
+          toggleNoiseCancellation
+        );
         /**
          *
          * @param {PageTransitionEvent | BeforeUnloadEvent} event

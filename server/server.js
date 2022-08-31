@@ -1,5 +1,4 @@
 import express from "express";
-import pino from "express-pino-logger";
 
 import Twilio from "twilio";
 import compression from "compression";
@@ -15,9 +14,12 @@ const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const app = express();
 
 app.use(compression());
-// app.use(pino);
 app.use(express.static(join(__dirname, "..", "public")));
 app.use("/images", express.static(join(__dirname, "..", "images")));
+app.use(
+  "/video",
+  express.static(join(__dirname, "..", "node_modules", "twilio-video", "dist"))
+);
 app.use(
   "/tf",
   express.static(
@@ -29,6 +31,19 @@ app.use(
       "video-processors",
       "dist",
       "build"
+    )
+  )
+);
+app.use(
+  "/krisp",
+  express.static(
+    join(
+      __dirname,
+      "..",
+      "node_modules",
+      "@twilio",
+      "krisp-audio-plugin",
+      "dist"
     )
   )
 );
