@@ -117,6 +117,7 @@ let blur, bgReplace;
 
 function ready() {
   if (blur && bgReplace) {
+    videoEffects.removeAttribute("hidden");
     loadingDiv.setAttribute("hidden", "hidden");
     loginDiv.removeAttribute("hidden");
   }
@@ -124,28 +125,33 @@ function ready() {
 
 window.addEventListener("load", async () => {
   import("@twilio/video-processors").then((VideoProcessors) => {
-    const blurredBackground =
-      new VideoProcessors.GaussianBlurBackgroundProcessor({
-        assetsPath: "/tf",
-        maskBlurRadius: 10,
-        blurFilterRadius: 5,
-      });
-    blurredBackground.loadModel().then(() => {
-      blur = blurredBackground;
-      ready();
-    });
-
-    loadImage("/images/background.jpg").then((img) => {
-      const imageBackground = new VideoProcessors.VirtualBackgroundProcessor({
-        assetsPath: "/tf",
-        backgroundImage: img,
-        maskBlurRadius: 5,
-      });
-      imageBackground.loadModel().then(() => {
-        bgReplace = imageBackground;
+    if (VideoProcessors.isSupported) {
+      const blurredBackground =
+        new VideoProcessors.GaussianBlurBackgroundProcessor({
+          assetsPath: "/tf",
+          maskBlurRadius: 10,
+          blurFilterRadius: 5,
+        });
+      blurredBackground.loadModel().then(() => {
+        blur = blurredBackground;
         ready();
       });
-    });
+
+      loadImage("/images/background.jpg").then((img) => {
+        const imageBackground = new VideoProcessors.VirtualBackgroundProcessor({
+          assetsPath: "/tf",
+          backgroundImage: img,
+          maskBlurRadius: 5,
+        });
+        imageBackground.loadModel().then(() => {
+          bgReplace = imageBackground;
+          ready();
+        });
+      });
+    } else {
+      loadingDiv.setAttribute("hidden", "hidden");
+      loginDiv.removeAttribute("hidden");
+    }
   });
 
   loginForm.addEventListener("submit", async (event) => {

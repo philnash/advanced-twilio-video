@@ -1,4 +1,6 @@
 import express from "express";
+import pino from "express-pino-logger";
+
 import Twilio from "twilio";
 import compression from "compression";
 
@@ -13,6 +15,7 @@ const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const app = express();
 
 app.use(compression());
+// app.use(pino);
 app.use(express.static(join(__dirname, "..", "public")));
 app.use("/images", express.static(join(__dirname, "..", "images")));
 app.use(
