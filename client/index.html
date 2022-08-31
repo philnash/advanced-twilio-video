@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>Advanced Twilio Video</title>
+  </head>
+  <body>
+    <main>
+      <div id="loading">
+        <h1>Loading</h1>
+      </div>
+      <div id="login" hidden>
+        <h1>Join the chat</h1>
+        <form id="login-form">
+          <div class="field">
+            <label for="identity">Your name</label>
+            <input type="text" name="identity" id="identity" required />
+          </div>
+          <div class="field">
+            <button>Preview</button>
+          </div>
+        </form>
+      </div>
+
+      <div id="local-preview" class="card local-preview" hidden>
+        <div id="previews">
+          <div id="video-preview" class="video-preview"></div>
+          <div class="controls">
+            <div id="camera-selector" class="media-select"></div>
+            <div id="mic-selector" class="media-select"></div>
+            <div id="video-effects">
+              <h3>Video effect</h3>
+              <input
+                type="radio"
+                name="video-effect"
+                value="none"
+                id="effect-none"
+                checked
+              /><label for="effect-none">None </label>
+              <input
+                type="radio"
+                name="video-effect"
+                value="blur"
+                id="effect-blur"
+              /><label for="effect-blur">Blur </label>
+              <input
+                type="radio"
+                name="video-effect"
+                value="image"
+                id="effect-image"
+              /><label for="effect-image">Image </label>
+            </div>
+          </div>
+        </div>
+
+        <form action="/token" method="POST" id="join-room">
+          <h2>Join room</h2>
+          <div class="field">
+            <label for="roomName">Room</label>
+            <input type="text" name="roomName" id="roomName" required />
+          </div>
+          <button type="submit">Join room</button>
+        </form>
+      </div>
+
+      <div id="chat" hidden>
+        <p>Joining <span id="room"></span> as <span id="username"></span></p>
+        <div id="participants">
+          <div id="local-participant"></div>
+          <div id="remote-participant"></div>
+        </div>
+        <div id="chat-controls">
+          <button id="mute-button">Mute</button>
+          <button id="disconnect-button">Disconnect</button>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <p>
+        Built with 📹 by <a href="https://twitter.com/philnash">philnash</a>
+      </p>
+    </footer>
+    <script src="./video.js" type="module"></script>
+  </body>
+</html>

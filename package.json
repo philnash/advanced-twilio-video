@@ -1,0 +1,35 @@
+{
+  "name": "advanced-twilio-video",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server:start": "nodenv index.js --force --exec nodemon",
+    "client:start": "parcel watch client/index.html --dist-dir public",
+    "start": "run-p 'client:start' 'server:start'"
+  },
+  "keywords": [],
+  "author": "Phil Nash <philnash@twilio.com> (https://philna.sh/)",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "@twilio/rtc-diagnostics": "^1.0.0",
+    "@twilio/video-processors": "^1.0.2",
+    "compression": "^1.7.4",
+    "express": "^4.18.1",
+    "twilio": "^3.81.0",
+    "twilio-video": "^2.24.0"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "node-env-run": "^4.0.2",
+    "nodemon": "^2.0.19",
+    "npm-run-all": "^4.1.5",
+    "parcel": "^2.7.0",
+    "process": "^0.11.10"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead"
+}
