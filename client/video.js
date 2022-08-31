@@ -179,7 +179,10 @@ window.addEventListener("load", async () => {
     let audioTrack = /** @type {LocalAudioTrack} */ (
       tracks.find((track) => track.kind === "audio")
     );
-    if (!audioTrack.noiseCancellation.isEnabled) {
+    if (
+      audioTrack.noiseCancellation &&
+      !audioTrack.noiseCancellation.isEnabled
+    ) {
       noiseCancellationButton.setAttribute("hidden", "hidden");
     }
     window.audioTrack = audioTrack;
@@ -232,7 +235,12 @@ window.addEventListener("load", async () => {
       detachTrack(audioTrack);
       audioTrack = await createLocalAudioTrack({
         deviceId: { exact: audioDevice },
+        noiseCancellationOptions: {
+          sdkAssetsPath: "/krisp",
+          vendor: "krisp",
+        },
       });
+      window.audioTrack = audioTrack;
     });
     cameraSelectorDiv.appendChild(videoSelect);
     micSelectorDiv.appendChild(audioSelect);
@@ -271,20 +279,23 @@ window.addEventListener("load", async () => {
       const method = /** @type {string} */ (
         joinRoomForm.getAttribute("method")
       );
-      const { token } = await fetch(tokenUrl, {
-        method,
-        body: JSON.stringify({
-          identity,
-          room: roomName,
-        }),
-        headers: { "Content-Type": "application/json" },
-      }).then((res) => res.json());
       try {
+        const { token } = await fetch(tokenUrl, {
+          method,
+          body: JSON.stringify({
+            identity,
+            room: roomName,
+          }),
+          headers: { "Content-Type": "application/json" },
+        }).then((res) => res.json());
         const room = await connect(token, {
           tracks: [videoTrack, audioTrack],
           name: roomName,
         });
-        if (!audioTrack.noiseCancellation.isEnabled) {
+        if (
+          audioTrack.noiseCancellation &&
+          !audioTrack.noiseCancellation.isEnabled
+        ) {
           noiseCancellationButton.setAttribute("hidden", "hidden");
         }
         room.participants.forEach(addParticipant(remoteParticipantDiv));
