@@ -5,7 +5,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "server:start": "nodenv index.js --force --exec nodemon",
+    "server:start:prod": "nodenv index.js --force",
     "client:start": "parcel watch client/index.html --dist-dir public",
+    "client:build": "parcel build client/index.html --dist-dir public --no-source-maps",
     "start": "run-p 'client:start' 'server:start'"
   },
   "keywords": [],

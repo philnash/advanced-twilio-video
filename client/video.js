@@ -10,6 +10,7 @@ const {
   RemoteParticipant,
 } = Twilio.Video;
 import { buildDropDown, attachTrack, detachTrack, loadImage } from "./utils";
+import { testAudioInputDevice, AudioInputTest } from "@twilio/rtc-diagnostics";
 
 const loadingDiv = /** @type {HTMLDivElement} */ (
   document.getElementById("loading")
@@ -19,6 +20,9 @@ const loginDiv = /** @type {HTMLDivElement} */ (
 );
 const loginForm = /** @type {HTMLFormElement} */ (
   document.getElementById("login-form")
+);
+const loginButton = /** @type {HTMLButtonElement} */ (
+  loginForm.querySelector("button")
 );
 const identityInput = /** @type {HTMLInputElement} */ (
   document.getElementById("identity")
@@ -65,6 +69,9 @@ const videoEffects = /** @type {HTMLDivElement} */ (
 );
 const noiseCancellationButton = /** @type {HTMLButtonElement} */ (
   document.getElementById("noise-cancellation")
+);
+const volumeMeter = /** @type {HTMLMeterElement} */ (
+  document.getElementById("volume-meter")
 );
 
 /**
@@ -115,7 +122,7 @@ function addParticipant(participantDiv) {
 function removeParticipant(participantDiv) {
   participantDiv.replaceChildren();
 }
-let blur, bgReplace;
+let blur, bgReplace, audioTest;
 
 function ready() {
   if (blur && bgReplace) {
@@ -158,6 +165,7 @@ window.addEventListener("load", async () => {
 
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    loginButton.setAttribute("disabled", "disabled");
     const identity = identityInput.value;
     const tracks = await createLocalTracks({
       video: {
@@ -172,7 +180,6 @@ window.addEventListener("load", async () => {
         },
       },
     });
-
     let videoTrack = /** @type {LocalVideoTrack} */ (
       tracks.find((track) => track.kind === "video")
     );
@@ -187,6 +194,7 @@ window.addEventListener("load", async () => {
     }
     window.audioTrack = audioTrack;
     let videoPreview = attachTrack(videoPreviewDiv, videoTrack);
+
     loginDiv.setAttribute("hidden", "hidden");
     localPreview.removeAttribute("hidden");
 
@@ -231,6 +239,9 @@ window.addEventListener("load", async () => {
     audioSelect.addEventListener("change", async (event) => {
       const select = /** @type HTMLSelectElement */ (event.target);
       const audioDevice = select.value;
+      if (audioTest) {
+        audioTest.stop();
+      }
       audioTrack.stop();
       detachTrack(audioTrack);
       audioTrack = await createLocalAudioTrack({
@@ -241,9 +252,22 @@ window.addEventListener("load", async () => {
         },
       });
       window.audioTrack = audioTrack;
+      audioTest = testAudioInputDevice({
+        deviceId: audioDevice,
+      });
+      audioTest.on(AudioInputTest.Events.Volume, (volume) => {
+        volumeMeter.value = volume;
+      });
     });
     cameraSelectorDiv.appendChild(videoSelect);
     micSelectorDiv.appendChild(audioSelect);
+
+    audioTest = testAudioInputDevice();
+
+    audioTest.on(AudioInputTest.Events.Volume, (volume) => {
+      volumeMeter.value = volume;
+    });
+    window.audioTest = audioTest;
 
     let currentVideoEffect = null;
 

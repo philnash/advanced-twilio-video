@@ -28,9 +28,21 @@
       <div id="local-preview" class="card local-preview" hidden>
         <div id="previews">
           <div id="video-preview" class="video-preview"></div>
+          <form action="/token" method="POST" id="join-room">
+            <h2>Join room</h2>
+            <div class="field">
+              <label for="roomName">Room</label>
+              <input type="text" name="roomName" id="roomName" required />
+            </div>
+            <button type="submit">Join room</button>
+          </form>
+        </div>
+
+        <div id="settings">
           <div class="controls">
+            <h2>Camera</h2>
             <div id="camera-selector" class="media-select"></div>
-            <div id="mic-selector" class="media-select"></div>
+
             <div id="video-effects" hidden>
               <h3>Video effect</h3>
               <input
@@ -53,17 +65,15 @@
                 id="effect-image"
               /><label for="effect-image">Image </label>
             </div>
+
+            <h2>Microphone</h2>
+            <div id="mic-selector" class="media-select"></div>
+            <h3>Volume</h3>
+            <div id="volume">
+              <meter id="volume-meter" max="255" min="0"></meter>
+            </div>
           </div>
         </div>
-
-        <form action="/token" method="POST" id="join-room">
-          <h2>Join room</h2>
-          <div class="field">
-            <label for="roomName">Room</label>
-            <input type="text" name="roomName" id="roomName" required />
-          </div>
-          <button type="submit">Join room</button>
-        </form>
       </div>
 
       <div id="chat" hidden>
